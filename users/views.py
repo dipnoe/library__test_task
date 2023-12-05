@@ -21,7 +21,7 @@ class UserCreateAPIView(CreateAPIView):
         if serializer.is_valid():
             try:
                 user = serializer.save()
-                send_welcome_message.delay(user.email)
+                send_welcome_message.delay(user.email, user.__str__())
                 return Response(status=status.HTTP_201_CREATED)
             except Exception as e:
                 return Response({'result': f"Возникла ошибка {e}"}, status=status.HTTP_400_BAD_REQUEST)
