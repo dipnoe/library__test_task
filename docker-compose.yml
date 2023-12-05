@@ -1,0 +1,89 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:latest
+    volumes:
+      - redis-data:/data
+    ports:
+      - '6380:6379'
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      timeout: 2s
+      retries: 5
+
+  db:
+    build:
+      context: ./docker/mysql
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - TZ=Europe/Moscow
+      - LANG=C.UTF-8
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - '3307:3306'
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/python/Dockerfile
+    command: ["bash", "docker/python/start.sh"]
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    working_dir: /app
+    tty: true
+    expose:
+      - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./static:/app/staticfiles
+    ports:
+      - "8001:80"
+    depends_on:
+      - app
+
+  celery: # Service to start celery worker(-s) in separate container
+    build:
+      context: .
+      dockerfile: ./docker/python/Dockerfile
+    environment:
+      - MODE="CELERY"
+    volumes:
+      - .:/app
+    working_dir: /app
+    tty: true
+    command: celery -A config worker -l INFO
+    depends_on:
+      - app
+      - redis
+
+volumes:
+  db-data:
+  redis-data:
+
+networks:
+  application-network:

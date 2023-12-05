@@ -124,7 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = BASE_DIR / "static"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -141,9 +141,15 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'users.User'
 
+# REDIS
+REDIS_CREDS = {
+    'HOST': getenv('REDIS_HOST'),
+    "PORT": getenv('REDIS_PORT'),
+}
+
 # CELERY
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_BROKER_URL = f"redis://{REDIS_CREDS['HOST']}:{REDIS_CREDS['PORT']}/0"
+CELERY_RESULT_BACKEND = f"redis://{REDIS_CREDS['HOST']}:{REDIS_CREDS['PORT']}"
 CELERY_TIMEZONE = "Europe/Moscow"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_ACCEPT_CONTENT = ['json']
