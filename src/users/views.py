@@ -1,11 +1,10 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
-
-from users.models import User
-from users.serializers import UserSerializer
-from users.tasks import send_welcome_message
 from rest_framework.response import Response
+
+from src.users.models import User
+from src.users.serializers import UserSerializer
+from src.users.tasks import send_welcome_message
 
 
 # Create your views here.
@@ -24,6 +23,12 @@ class UserCreateAPIView(CreateAPIView):
                 send_welcome_message.delay(user.email, user.__str__())
                 return Response(status=status.HTTP_201_CREATED)
             except Exception as e:
-                return Response({'result': f"Возникла ошибка {e}"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'result': f"Возникла ошибка {e}"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+                )

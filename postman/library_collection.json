@@ -156,7 +156,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{protocol}}://{{host}}:{{port}}/book/destroy/:book_id",
+					"raw": "{{protocol}}://{{host}}:{{port}}/book/delete/:book_id",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{host}}"
@@ -164,7 +164,7 @@
 					"port": "{{port}}",
 					"path": [
 						"book",
-						"destroy",
+						"delete",
 						":book_id"
 					],
 					"variable": [

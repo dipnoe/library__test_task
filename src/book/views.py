@@ -1,8 +1,11 @@
-from django.shortcuts import render
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import (ListAPIView,
+                                     RetrieveAPIView,
+                                     CreateAPIView,
+                                     UpdateAPIView,
+                                     DestroyAPIView)
 
-from book.models import Book
-from book.serializers import BookSerializer
+from src.book.models import Book
+from src.book.serializers import BookSerializer
 
 
 # Create your views here.
