@@ -2,7 +2,7 @@ from datetime import datetime
 
 from rest_framework import serializers
 
-from book.models import Book
+from src.book.models import Book
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -19,5 +19,7 @@ class BookSerializer(serializers.ModelSerializer):
     @staticmethod
     def validate_publishing_year(value):
         if int(value) > datetime.now().year:
-            raise serializers.ValidationError("Дата публикации книги не может быть больше текущего года.")
+            raise serializers.ValidationError(
+                "Дата публикации книги не может быть больше текущего года."
+            )
         return value

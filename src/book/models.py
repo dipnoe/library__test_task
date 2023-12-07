@@ -7,7 +7,9 @@ NULLABLE = {'null': True, 'blank': True}
 class Book(models.Model):
     name = models.CharField(max_length=255, verbose_name='название')
     author = models.CharField(max_length=255, verbose_name='автор', **NULLABLE)
-    publishing_year = models.PositiveIntegerField(verbose_name='год публикации', **NULLABLE)
+    publishing_year = models.PositiveIntegerField(
+        verbose_name='год публикации',
+        **NULLABLE)
     isbn = models.CharField(max_length=17, unique=True, **NULLABLE)
 
     class Meta:
