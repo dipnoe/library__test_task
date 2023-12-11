@@ -12,9 +12,6 @@ RUN groupadd --gid 5000 nonroot \
     && useradd --home-dir /home/nonroot --create-home --uid 5000 \
         --gid 5000 --shell /bin/bash --skel /dev/null nonroot
 
-RUN mkdir -p ../../static && \
-    chown -R nonroot:nonroot ../../static
-
 USER nonroot
 
 CMD ["bash", "-c", "start.sh"]
