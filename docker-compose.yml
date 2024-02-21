@@ -2,7 +2,9 @@ version: '3.9'
 
 services:
   postgres:
-    image: postgres:16.1-alpine
+    build:
+      context: .
+      dockerfile: ./docker/postgres/Dockerfile
     ports:
       - "54321:5432"
     volumes:
@@ -21,18 +23,27 @@ services:
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
-    command: ["sh", "-c", "./manage.py migrate &&
-             ./manage.py runserver 0.0.0.0:8000"]
+    command: ["bash", "docker/app/start.sh"]
     restart: unless-stopped
     volumes:
       - .:/app
     working_dir: /app
     tty: true
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     depends_on:
       postgres:
         condition: service_healthy
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    depends_on:
+      - app
 
 volumes:
   pg-data:
